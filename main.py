@@ -33,7 +33,6 @@ login_manager.init_app(app)
 def load_user(user_id):
     return db.get_or_404(User, user_id)
 
-# CREATE DATABASE
 class Base(DeclarativeBase):
     pass
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URI", "sqlite:///posts.db")
@@ -41,7 +40,6 @@ db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
 
-# CONFIGURE TABLES
 class BlogPost(db.Model):
     __tablename__ = "blog_posts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -60,7 +58,6 @@ class BlogPost(db.Model):
     comments = relationship("Comment", back_populates="parent_post")
 
 
-# TODO: Create a User table for all your registered users. 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -98,7 +95,6 @@ def admin_only(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# TODO: Use Werkzeug to hash the user's password when creating a new user.
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -127,7 +123,6 @@ def register():
     return render_template("register.html", form=form)
 
 
-# TODO: Retrieve a user from the database based on their email. 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     print(current_user)
@@ -193,7 +188,6 @@ def show_post(post_id):
     return render_template("post.html", post=requested_post, form=comment_form)
 
 
-# TODO: Use a decorator so only an admin user can create a new post
 @app.route("/new-post", methods=["GET", "POST"])
 @admin_only
 def add_new_post():
@@ -213,7 +207,6 @@ def add_new_post():
     return render_template("make-post.html", form=form)
 
 
-# TODO: Use a decorator so only an admin user can edit a post
 @app.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
 @admin_only
 def edit_post(post_id):
@@ -236,7 +229,6 @@ def edit_post(post_id):
     return render_template("make-post.html", form=edit_form, is_edit=True)
 
 
-# TODO: Use a decorator so only an admin user can delete a post
 @app.route("/delete/<int:post_id>")
 @admin_only
 def delete_post(post_id):
